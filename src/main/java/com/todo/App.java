@@ -38,7 +38,11 @@ public class App {
             registerRecurringTodoUseCase,
             unregisterRecurringTodoUseCase);
 
-        Javalin app = Javalin.create().start(7070);
+        Javalin app = Javalin.create(config -> {
+            config.plugins.enableCors(cors -> {
+                cors.add(it -> it.anyHost());
+            });
+        }).start(7070);
         app.get("/todos", todoController::findAll);
         app.get("/todos/{id}", todoController::findById);
         app.post("/todos", todoController::create);

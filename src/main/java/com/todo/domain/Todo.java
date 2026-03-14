@@ -1,7 +1,7 @@
 package com.todo.domain;
 
 public class Todo {
-    private long id;
+    private Long id;
     private String title;
     private long userId;
     private boolean done;
@@ -19,11 +19,11 @@ public class Todo {
         this.recurring = recurring;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

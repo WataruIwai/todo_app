@@ -74,6 +74,7 @@ public class JdbcTodoRepository implements TodoRepository {
                 throw new RuntimeException("Unexpected number of inserted rows: " + affectedRows);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
