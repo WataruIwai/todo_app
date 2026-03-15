@@ -40,7 +40,7 @@ public class App {
 
         Javalin app = Javalin.create(config -> {
             config.plugins.enableCors(cors -> {
-                cors.add(it -> it.anyHost());
+                cors.add(it -> it.allowHost("http://localhost:5173"));
             });
         }).start(7070);
         app.get("/todos", todoController::findAll);
