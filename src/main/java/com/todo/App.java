@@ -1,9 +1,8 @@
 package com.todo;
 
-import java.sql.Connection;
-
 import com.todo.controller.TodoController;
-import com.todo.db.DbConnection;
+import com.todo.db.ConnectionProvider;
+import com.todo.db.DefaultConnectionProvider;
 import com.todo.repository.TodoRepository;
 import com.todo.repository.jdbc.JdbcTodoRepository;
 import com.todo.useCase.CreateTodoUseCase;
@@ -18,8 +17,8 @@ import io.javalin.Javalin;
 
 public class App {
     public static void main(String[] args) {
-        Connection connection = DbConnection.getConnection();
-        TodoRepository todoRepository = new JdbcTodoRepository(connection);
+        ConnectionProvider connectionProvider = new DefaultConnectionProvider();
+        TodoRepository todoRepository = new JdbcTodoRepository(connectionProvider);
 
         FindAllTodoUseCase findAllTodoUseCase = new FindAllTodoUseCase(todoRepository);
         FindTodoByIdUseCase findTodoByIdUseCase = new FindTodoByIdUseCase(todoRepository);
