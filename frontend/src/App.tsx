@@ -39,18 +39,23 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   const userId = Number.parseInt(userIdInput, 10);
-  const selectedUserTodos = Number.isNaN(userId)
-    ? []
-    : todos.filter((todo) => todo.userId === userId);
+  const selectedUserTodos = todos;
   const completedCount = selectedUserTodos.filter((todo) => todo.done).length;
   const recurringCount = selectedUserTodos.filter((todo) => todo.recurring).length;
 
   async function loadTodos() {
+    if (Number.isNaN(userId)) {
+      setTodos([]);
+      setError("User ID must be a number");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const data = await fetchTodos();
+      const data = await fetchTodos(userId);
       setTodos(data);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Failed to load todos");

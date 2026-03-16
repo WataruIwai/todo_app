@@ -12,7 +12,7 @@ public class FindAllTodoUseCase {
         this.todoRepository = todoRepository;
     }
 
-    public List<Todo> execute() {
-        return todoRepository.findAll();
+    public List<Todo> execute(long userId) {
+        return todoRepository.findAllByUserId(userId);
     }
 }

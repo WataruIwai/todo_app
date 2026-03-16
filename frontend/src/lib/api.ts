@@ -34,8 +34,8 @@ function toFormBody(values: Record<string, string | number | boolean>) {
   return body;
 }
 
-export async function fetchTodos(): Promise<Todo[]> {
-  return request<Todo[]>("/todos");
+export async function fetchTodos(userId: number): Promise<Todo[]> {
+  return request<Todo[]>(`/todos?userId=${userId}`);
 }
 
 export async function createTodo(input: { title: string; userId: number }) {

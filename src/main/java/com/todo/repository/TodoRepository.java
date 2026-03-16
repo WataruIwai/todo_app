@@ -5,7 +5,7 @@ import java.util.List;
 import com.todo.domain.Todo;
 
 public interface TodoRepository {
-    List<Todo> findAll();
+    List<Todo> findAllByUserId(long userId);
     Todo findById(long todoId, long userId);
     void createTodo(Todo todo);
     Todo editTodo(Todo todo);

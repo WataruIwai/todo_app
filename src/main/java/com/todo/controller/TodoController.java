@@ -39,14 +39,45 @@ public class TodoController {
         this.unregisterRecurringTodoUseCase = unregisterRecurringTodoUseCase;
     }
 
+    private Long parseUserIdQueryParam(Context ctx) {
+        String userIdParam = ctx.queryParam("userId");
+        return parseUserId(userIdParam, ctx);
+    }
+
+    private Long parseUserIdFormParam(Context ctx) {
+        String userIdParam = ctx.formParam("userId");
+        return parseUserId(userIdParam, ctx);
+    }
+
+    private Long parseUserId(String userIdParam, Context ctx) {
+        if (userIdParam == null) {
+            ctx.status(400).result("userId is required");
+            return null;
+        }
+
+        try {
+            return Long.parseLong(userIdParam);
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("userId must be a number");
+            return null;
+        }
+    }
+
     public void findAll(Context ctx) {
-        List<Todo> todos = findAllTodoUseCase.execute();
+        Long userId = parseUserIdQueryParam(ctx);
+        if (userId == null) {
+            return;
+        }
+        List<Todo> todos = findAllTodoUseCase.execute(userId);
         ctx.json(todos);
     }
 
     public void findById(Context ctx) {
         long id = Long.parseLong(ctx.pathParam("id"));
-        long userId = Long.parseLong(ctx.queryParam("userId"));
+        Long userId = parseUserIdQueryParam(ctx);
+        if (userId == null) {
+            return;
+        }
 
         Todo todo = findTodoByIdUseCase.execute(id, userId);
         if (todo == null) {
@@ -59,7 +90,10 @@ public class TodoController {
 
     public void create(Context ctx) {
         String title = ctx.formParam("title");
-        long userId = Long.parseLong(ctx.formParam("userId"));
+        Long userId = parseUserIdFormParam(ctx);
+        if (userId == null) {
+            return;
+        }
         Todo todo = new Todo(title, userId);
         createTodoUseCase.execute(todo);
         ctx.status(201).result("Todo created");
@@ -68,14 +102,16 @@ public class TodoController {
     public void edit(Context ctx) {
         long id = Long.parseLong(ctx.pathParam("id"));
         String title = ctx.formParam("title");
-        String userIdParam = ctx.formParam("userId");
         String doneParam = ctx.formParam("done");
-        if (title == null || userIdParam == null || doneParam == null) {
+        if (title == null || doneParam == null) {
             ctx.status(400).result("title, userId, and done are required");
             return;
         }
 
-        long userId = Long.parseLong(userIdParam);
+        Long userId = parseUserIdFormParam(ctx);
+        if (userId == null) {
+            return;
+        }
         boolean done = Boolean.parseBoolean(doneParam);
         Todo existingTodo = findTodoByIdUseCase.execute(id, userId);
         if (existingTodo == null) {
@@ -90,21 +126,30 @@ public class TodoController {
 
     public void delete(Context ctx) {
         long id = Long.parseLong(ctx.pathParam("id"));
-        long userId = Long.parseLong(ctx.queryParam("userId"));
+        Long userId = parseUserIdQueryParam(ctx);
+        if (userId == null) {
+            return;
+        }
         deleteTodoUseCase.execute(id, userId);
         ctx.status(200).result("Todo deleted");
     }
 
     public void registerRecurring(Context ctx) {
         long id = Long.parseLong(ctx.pathParam("id"));
-        long userId = Long.parseLong(ctx.queryParam("userId"));
+        Long userId = parseUserIdQueryParam(ctx);
+        if (userId == null) {
+            return;
+        }
         Todo recurringTodo = recurringTodoUseCase.execute(id, userId);
         ctx.json(recurringTodo);
     }
 
     public void unregisterRecurring(Context ctx) {
         long id = Long.parseLong(ctx.pathParam("id"));
-        long userId = Long.parseLong(ctx.queryParam("userId"));
+        Long userId = parseUserIdQueryParam(ctx);
+        if (userId == null) {
+            return;
+        }
         Todo recurringTodo = unregisterRecurringTodoUseCase.execute(id, userId);
         ctx.json(recurringTodo);
     }
